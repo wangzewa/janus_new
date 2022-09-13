@@ -416,6 +416,8 @@ class JanusPlugin {
     _context._logger
         .fine('disposing localStream and remoteStream if it already exists');
     if (webRTCHandle!.localStream != null) {
+      _context._logger
+          .fine('disposing localStream ');
       if (audio) {
         webRTCHandle?.localStream?.getAudioTracks().forEach((element) async {
           await element.stop();
@@ -430,6 +432,24 @@ class JanusPlugin {
         webRTCHandle?.localStream?.dispose();
       }
     }
+    // if (webRTCHandle!.localAudioStream != null) {
+    //   _context._logger
+    //       .fine('localaudiostream');
+    //   if (audio) {
+    //     webRTCHandle?.localAudioStream?.getAudioTracks().forEach((element) async {
+    //       await element.stop();
+    //     });
+    //   }
+    //   if (video) {
+    //     webRTCHandle?.localAudioStream?.getVideoTracks().forEach((element) async {
+    //       await element.stop();
+    //     });
+    //   }
+    //   if (audio && video) {
+    //     webRTCHandle?.localAudioStream?.dispose();
+    //   }
+    // }
+    
     if (webRTCHandle!.remoteStream != null && !ignoreRemote) {
       webRTCHandle?.remoteStream?.getTracks().forEach((element) async {
         await element.stop();
@@ -544,44 +564,47 @@ class JanusPlugin {
   Future<MediaStream?> initializeMediaDevices(
       {bool? useDisplayMediaDevices = false,
         required bool isVideo,
-      Map<String, dynamic>? mediaConstraints}) async {
+        required bool isAudio,
+      Map<String, dynamic>? mediaConstraints,Map<String, dynamic>? mediaAudioConstraints}) async {
     await _disposeMediaStreams(ignoreRemote: true);
-    List<MediaDeviceInfo> videoDevices = await getVideoInputDevices();
-    List<MediaDeviceInfo> audioDevices = await getAudioInputDevices();
-    if (videoDevices.isEmpty && audioDevices.isEmpty) {
-      throw Exception("No device found for media generation");
-    }
-    if (mediaConstraints == null) {
-      if (videoDevices.isEmpty && audioDevices.isNotEmpty) {
-        mediaConstraints = {"audio": true, "video": false};
-      } else if (videoDevices.length == 1 && audioDevices.isNotEmpty) {
-        mediaConstraints = {"audio": true, 'video': true};
-      } else {
-        mediaConstraints = {
-          "audio": audioDevices.length > 0,
-          'video': {
-            'deviceId': {'exact': isVideo?videoDevices.first.deviceId:videoDevices[1].deviceId},
-          },
-        };
-      }
-    }
+    
+
+
+    
     _context._logger.fine(mediaConstraints);
     if (webRTCHandle != null) {
       if (useDisplayMediaDevices == true) {
         webRTCHandle!.localStream =
-            await navigator.mediaDevices.getDisplayMedia(mediaConstraints);
+            await navigator.mediaDevices.getDisplayMedia(mediaConstraints!);
       } else {
-        webRTCHandle!.localStream =
-            await navigator.mediaDevices.getUserMedia(mediaConstraints);
+        if(mediaConstraints!=null&&isVideo){
+          webRTCHandle!.localStream =
+          await navigator.mediaDevices.getUserMedia(mediaConstraints);        
+        }
+        // if(mediaAudioConstraints!=null&&isAudio){
+        //   webRTCHandle!.localAudioStream = await navigator.mediaDevices.getUserMedia(mediaAudioConstraints);
+        // }
       }
       if (_context._isUnifiedPlan && !_context._usePlanB) {
         _context._logger.fine('using unified plan');
-        webRTCHandle!.localStream!.getTracks().forEach((element) async {
-          _context._logger.fine('adding track in peerconnection');
-          _context._logger.fine(element.toString());
-          await webRTCHandle!.peerConnection!
-              .addTrack(element, webRTCHandle!.localStream!);
-        });
+        if(isVideo&&mediaConstraints!=null){
+          webRTCHandle!.localStream!.getTracks().forEach((element) async {
+            _context._logger.fine('adding track in peerconnection');
+            _context._logger.fine(element.toString());
+            await webRTCHandle!.peerConnection!
+                .addTrack(element, webRTCHandle!.localStream!);
+          });
+        }
+        // if(isAudio&&mediaAudioConstraints!=null){
+        //   webRTCHandle!.localAudioStream!.getAudioTracks().forEach((element) async {
+        //     _context._logger.fine('adding track in peerconnection');
+        //     _context._logger.fine(element.toString());
+        //     await webRTCHandle!.peerConnection!
+        //         .addTrack(element, webRTCHandle!.localAudioStream!);
+        //   });
+        // }
+
+        
       } else {
         _localStreamController!.sink.add(webRTCHandle!.localStream);
         await webRTCHandle!.peerConnection!

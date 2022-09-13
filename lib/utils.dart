@@ -3,6 +3,7 @@ part of janus_client;
 class JanusWebRTCHandle {
   MediaStream? remoteStream;
   MediaStream? localStream;
+  // MediaStream? localAudioStream;
   RTCPeerConnection? peerConnection;
   Map<String, RTCDataChannel> dataChannel = {};
 
