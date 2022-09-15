@@ -154,6 +154,7 @@ class JanusVideoRoomPlugin extends JanusPlugin {
     bool video = true,
     bool audio = true,
     String? token,
+    Function? dealTra,
   }) async {
     Future<void> start(
         {audioRecv = true,
@@ -182,7 +183,8 @@ class JanusVideoRoomPlugin extends JanusPlugin {
       "streams": streams?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
     _handleRoomIdTypeDifference(payload);
-    await this.send(data: payload);
+    final data  = await this.send(data: payload);
+    if(dealTra!=null)dealTra(data);
     return start;
   }
 
@@ -197,7 +199,7 @@ class JanusVideoRoomPlugin extends JanusPlugin {
       int? audioLevelAverage,
       int? audioActivePackets,
       List<Map<String, String>>? descriptions,
-      RTCSessionDescription? offer}) async {
+      RTCSessionDescription? offer,Function? dealTra}) async {
     var payload = {
       "request": "publish",
       "audiocodec": audioCodec,
@@ -214,7 +216,8 @@ class JanusVideoRoomPlugin extends JanusPlugin {
       offer = await this.createOffer(
           audioRecv: false, audioSend: true, videoRecv: false, videoSend: true);
     }
-    await this.send(data: payload, jsep: offer);
+    final data  = await this.send(data: payload, jsep: offer,isPOS: true);
+    if(dealTra!=null)dealTra(data);
   }
 
   ///更改流订阅
