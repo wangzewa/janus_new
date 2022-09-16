@@ -1,12 +1,13 @@
 part of janus_client;
 
 class JanusVideoRoomPlugin extends JanusPlugin {
-  JanusVideoRoomPlugin({handleId, context, transport, session})
+  JanusVideoRoomPlugin({handleId, context, transport, session,required feedUser})
       : super(
             context: context,
             handleId: handleId,
             plugin: JanusPlugins.VIDEO_ROOM,
             session: session,
+            feedUser: feedUser,
             transport: transport);
 
   ///  This allows you to modify the room description, secret, pin and whether it's private or not:

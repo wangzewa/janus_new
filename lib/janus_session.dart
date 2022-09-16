@@ -61,7 +61,7 @@ class JanusSession {
     }
   }
 
-  Future<T> attach<T extends JanusPlugin>() async {
+  Future<T> attach<T extends JanusPlugin>({String? feedUser,}) async {
     JanusPlugin plugin;
     int? handleId;
     String transaction = getUuid().v4();
@@ -78,7 +78,9 @@ class JanusSession {
           transport: _transport,
           context: _context,
           handleId: handleId,
-          session: this);
+          session: this,
+          feedUser: feedUser,
+      );
     } else if (T == JanusVideoCallPlugin) {
       plugin = JanusVideoCallPlugin(
           transport: _transport,

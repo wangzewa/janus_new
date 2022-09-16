@@ -7,6 +7,7 @@ class JanusVideoCallPlugin extends JanusPlugin {
             handleId: handleId,
             plugin: JanusPlugins.VIDEO_CALL,
             session: session,
+            feedUser: '',
             transport: transport);
 
   /// Get List of peers

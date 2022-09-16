@@ -16,6 +16,7 @@ class JanusPlugin {
   late JanusClient _context;
   late JanusTransport? _transport;
   late JanusSession? _session;
+  final String feedUser;
   String? plugin;
   bool _initialized = false;
 
@@ -34,11 +35,11 @@ class JanusPlugin {
   Stream<RTCDataChannelMessage>? data;
   Stream<RTCDataChannelState>? onData;
   Stream<RemoteTrack>? remoteTrack;
-  Stream<MediaStream>? remoteStream;
+  Stream<Map<String,MediaStream>>? remoteStream;
   Stream<MediaStream?>? localStream;
   StreamController<MediaStream?>? _localStreamController;
   StreamController<RemoteTrack>? _remoteTrackStreamController;
-  StreamController<MediaStream>? _remoteStreamController;
+  StreamController<Map<String,MediaStream>>? _remoteStreamController;
   StreamController<dynamic>? _streamController;
   StreamController<EventMessage>? _messagesStreamController;
   StreamController<TypedEvent>? _typedMessagesStreamController;
@@ -61,6 +62,7 @@ class JanusPlugin {
       required JanusClient context,
       required JanusTransport transport,
       required JanusSession session,
+      required this.feedUser,
       this.plugin}) {
     _context = context;
     _session = session;
@@ -159,7 +161,7 @@ class JanusPlugin {
     _remoteTrackStreamController = StreamController<RemoteTrack>();
     remoteTrack = _remoteTrackStreamController!.stream.asBroadcastStream();
     // remote MediaStream plan-b
-    _remoteStreamController = StreamController<MediaStream>();
+    _remoteStreamController = StreamController<Map<String,MediaStream>>();
     remoteStream = _remoteStreamController!.stream.asBroadcastStream();
 
     // data channel stream contoller
@@ -202,7 +204,7 @@ class JanusPlugin {
 
         _context._logger.fine("Handling Remote Track");
         if (event.streams.length == 0) return;
-        _remoteStreamController?.add(event.streams[0]);
+        _remoteStreamController?.add({feedUser:event.streams[0]});
         if (event.track.id == null) return;
         // Notify about the new track event
         String? mid =

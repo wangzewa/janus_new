@@ -6,6 +6,7 @@ class JanusStreamingPlugin extends JanusPlugin {
             context: context,
             handleId: handleId,
             plugin: JanusPlugins.STREAMING,
+            feedUser: '',
             session: session,
             transport: transport);
 

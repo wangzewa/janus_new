@@ -10,6 +10,7 @@ class JanusSipPlugin extends JanusPlugin {
             handleId: handleId,
             plugin: JanusPlugins.SIP,
             session: session,
+            feedUser: '',
             transport: transport);
 
   /// Register client to sip server

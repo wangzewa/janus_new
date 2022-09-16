@@ -7,6 +7,7 @@ class JanusTextRoomPlugin extends JanusPlugin {
             handleId: handleId,
             plugin: JanusPlugins.TEXT_ROOM,
             session: session,
+            feedUser: '',
             transport: transport);
 
   bool _setup = false;

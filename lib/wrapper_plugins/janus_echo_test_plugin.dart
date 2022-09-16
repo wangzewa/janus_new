@@ -7,5 +7,6 @@ class JanusEchoTestPlugin extends JanusPlugin {
             handleId: handleId,
             plugin: JanusPlugins.ECHO_TEST,
             session: session,
+            feedUser: '',
             transport: transport);
 }

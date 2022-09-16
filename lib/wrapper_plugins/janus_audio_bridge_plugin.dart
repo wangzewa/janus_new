@@ -7,6 +7,7 @@ class JanusAudioBridgePlugin extends JanusPlugin {
             handleId: handleId,
             plugin: JanusPlugins.AUDIO_BRIDGE,
             session: session,
+            feedUser: '',
             transport: transport);
 
   ///
